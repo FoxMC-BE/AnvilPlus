@@ -159,7 +159,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                 if (echoI != null) {
                     Item echo = echoI.getEcho();
                     if (echo != null && echo.getId() != 0) {
-                        //玩家取出物品时消耗
+                        //Consumption when the player takes out the item
                         if (index == ECHO_ITEM && before != null && before.getId() != 0 && !(before instanceof OccupyItem)) {
                             if (AnvilPlus.saveAnvilBlock.containsKey(player)) {
                                 this.setItem(TOOL_ITEM_SLOT, echoI.getLocal());
@@ -189,7 +189,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                                 }
                                 tag.putString("tag_name", "OccupyItem");
                                 echo.setCompoundTag(tag);
-                                echo.setCustomName(AnvilPlus.format("&r&c暂不可取 " + event.getCause()));
+                                echo.setCustomName(AnvilPlus.format("&r&cTemporarily undesirable " + event.getCause()));
                             }
 
                             //防止重复触发onSlotChange
@@ -209,7 +209,7 @@ public class AnvilPlusInventory extends ContainerInventory implements InventoryH
                     }
                 }
             }catch (PlayerMoneyErrorException e){
-                AnvilPlus.getInstance().getLogger().info(AnvilPlus.format("&c玩家 "+e.getPlayer().getName()+"在使用铁砧的时候金钱异常"));
+                AnvilPlus.getInstance().getLogger().info(AnvilPlus.format("&cPlayer "+e.getPlayer().getName()+" Money is abnormal when using an anvil"));
             }
         }else{
             if(!(echos instanceof OccupyItem)) {

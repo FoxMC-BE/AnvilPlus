@@ -24,15 +24,14 @@ public class Tools {
         fakeEntity.x = (float)player.x;
         fakeEntity.y = (float)((player.y+3)>256 ? 256 : player.y+3);
         fakeEntity.z = (float)player.z;
-        fakeEntity.metadata.putString(4, "§l§e铁砧").putByte(44, 8).putInt(45, InventoryType.HOPPER.getDefaultSize());
+        fakeEntity.metadata.putString(4, "§l§eAnvil").putByte(44, 8).putInt(45, InventoryType.HOPPER.getDefaultSize());
         player.dataPacket(fakeEntity);
         BaseHolder inventory = new BaseHolder(player);
         ((AnvilPlusInventory)inventory.getInventory()).id = id;
-        ((AnvilPlusInventory)inventory.getInventory()).title = "§l§e铁砧";
+        ((AnvilPlusInventory)inventory.getInventory()).title = "§l§eAnvil";
         AnvilPlus.inventory.put(player, (AnvilPlusInventory) inventory.getInventory());
-//
-        player.addWindow(inventory.getInventory());
 
+        player.addWindow(inventory.getInventory());
     }
 
 }

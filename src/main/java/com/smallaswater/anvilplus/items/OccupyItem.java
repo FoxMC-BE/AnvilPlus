@@ -16,7 +16,7 @@ public class OccupyItem extends Item {
         CompoundTag tag = new CompoundTag();
         tag.putString("tag_name","OccupyItem");
         this.setCompoundTag(tag);
-        this.setCustomName(AnvilPlus.format("&r&c这里无法放置物品哦"));
+        this.setCustomName(AnvilPlus.format("&r&cNo items can be placed here"));
     }
 
 

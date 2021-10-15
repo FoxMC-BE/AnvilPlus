@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAnvil;
+import cn.nukkit.block.BlockCraftingTable;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
@@ -23,6 +24,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
+import com.smallaswater.anvilplus.commands.AnvilCommand;
+import com.smallaswater.anvilplus.commands.CraftCommand;
 import com.smallaswater.anvilplus.craft.CraftItemManager;
 import com.smallaswater.anvilplus.events.AnvilBreakEvent;
 import com.smallaswater.anvilplus.events.AnvilSetEchoItemEvent;
@@ -56,7 +59,7 @@ public class AnvilPlus extends PluginBase implements Listener {
         saveDefaultConfig();
         reloadConfig();
         loadMoney = new LoadMoney();
-        String economy = getConfig().getString("消耗类型","default").toLowerCase();
+        String economy = getConfig().getString("consume-type","default").toLowerCase();
         int load = LoadMoney.EXP;
         if("default".equalsIgnoreCase(economy)){
             load = -1;
@@ -75,36 +78,24 @@ public class AnvilPlus extends PluginBase implements Listener {
         }
         if(loadMoney.getMoney() == LoadMoney.ECONOMY_API){
             if(Server.getInstance().getPluginManager().getPlugin("EconomyAPI") != null){
-                this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" EconomyAPI");
+                this.getLogger().info("Loaded:"+ TextFormat.GREEN+" EconomyAPI");
             }else{
                 this.getLogger().warning("铁砧消耗类型无法启用:"+ TextFormat.GREEN+" EconomyAPI "+"已经更改为 经验值");
                 loadMoney.setMoney(LoadMoney.EXP);
             }
         }
-        if(loadMoney.getMoney()  == LoadMoney.MONEY){
-            if(Server.getInstance().getPluginManager().getPlugin("Money") != null){
-                this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" Money");
-            }else{
-                this.getLogger().warning("铁砧消耗类型无法启用:"+ TextFormat.GREEN+" Money "+"已经更改为 经验值");
-                loadMoney.setMoney(LoadMoney.EXP);
-            }
-        }
-        if(loadMoney.getMoney()  == LoadMoney.PLAYER_POINT){
-            if(Server.getInstance().getPluginManager().getPlugin("playerPoints") != null){
-                this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" PlayerPoint");
-            }else{
-                this.getLogger().warning("铁砧消耗类型无法启用:"+ TextFormat.GREEN+" PlayerPoint "+"已经更改为 经验值");
-                loadMoney.setMoney(LoadMoney.EXP);
-            }
-        }
         if(loadMoney.getMoney()  == LoadMoney.EXP){
-            this.getLogger().info("铁砧消耗类型已启用:"+ TextFormat.GREEN+" 经验值");
+            this.getLogger().info("Loaded:"+ TextFormat.GREEN+" 经验值");
         }
 
-        this.getLogger().info(format("&b[铁砧] 插件加载成功"));
+        this.getLogger().info(format("&b[AnvilPlus] Loaded"));
         CraftItemManager.init();
         Item.addCreativeItem(new AnvilNameTagItem());
         this.getServer().getPluginManager().registerEvents(this,this);
+        this.getServer().getPluginManager().registerEvents(new CraftCommand(),this);
+
+        this.getServer().getCommandMap().register("anvil", new AnvilCommand());
+        this.getServer().getCommandMap().register("craft", new CraftCommand());
     }
 
     public static LoadMoney getLoadMoney() {
@@ -121,7 +112,7 @@ public class AnvilPlus extends PluginBase implements Listener {
         if(player.getGamemode() != 1) {
             double exp = event.getEcho().getUseMoney();
             if (loadMoney.myMoney(player) < exp) {
-                event.setCancelledItem(loadMoney.getName()+"不足");
+                event.setCancelledItem(loadMoney.getName()+" is insufficient");
             }
         }
     }
@@ -140,8 +131,8 @@ public class AnvilPlus extends PluginBase implements Listener {
                 event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_AIR){
                 if (item.hasCompoundTag() && item.getNamedTag().contains(AnvilNameTagItem.ITEM_TAG)) {
                     resetItem.put(event.getPlayer(), item);
-                    FormWindowCustom custom = new FormWindowCustom("重命名");
-                    custom.addElement(new ElementInput("请输入新的名称"));
+                    FormWindowCustom custom = new FormWindowCustom("Rename");
+                    custom.addElement(new ElementInput("Please enter a new name"));
                     event.getPlayer().showFormWindow(custom, MENU_ID);
                     event.setCancelled();
                     return;
@@ -150,6 +141,7 @@ public class AnvilPlus extends PluginBase implements Listener {
         }
         if(block instanceof BlockAnvil){
             if(event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+
                 Tools.getAnvilInventory(event.getPlayer());
                 saveAnvilBlock.put(event.getPlayer(),block);
                 event.setCancelled();
@@ -184,7 +176,7 @@ public class AnvilPlus extends PluginBase implements Listener {
     @EventHandler
     public void onAnvilBreak(AnvilBreakEvent event){
         Block block = event.getBlock();
-        if(getConfig().getStringList("铁砧损坏白名单")
+        if(getConfig().getStringList("anvil-damage-whitelist")
                 .contains(block.level.getFolderName())){
             event.setCancelled();
         }
@@ -230,6 +222,7 @@ public class AnvilPlus extends PluginBase implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onBreak(BlockBreakEvent  event){
         if(event.isCancelled()){

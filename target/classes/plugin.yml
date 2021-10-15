@@ -1,0 +1,9 @@
+name: AnvilCraftPlus
+main: com.smallaswater.anvilplus.AnvilPlus
+version: 1.1.5
+api: 1.0.0
+author: 若水
+loadbefore:
+  - PlayerPoint
+  - EconomyAPI
+  - Money

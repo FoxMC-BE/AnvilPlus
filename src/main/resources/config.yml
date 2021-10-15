@@ -1,5 +1,5 @@
 #支持 exp,economyapi,money,playerpoint,default
-消耗类型: "exp"
-使用铁砧消耗数值: 10
+consume-type: "exp"
+anvil-damage-whitelist: 10
 # 铁砧在以下地图内不会损坏耐久
 铁砧损坏白名单: ["zc"]
